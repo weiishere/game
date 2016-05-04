@@ -1,0 +1,66 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>Running Girl</title>
+    <script src="lufylegend-1.9.10.min.js"></script>
+    <script src="SoundPlayer.js"></script>
+</head>
+<body style="margin:0px 0px 0px 0px;padding:0px 0px 0px 0px;background-color:#000000;">
+    <div id="legend">loading</div>
+</body>
+</html>
+<script>
+    //LGlobal.aspectRatio = LANDSCAPE;
+    init(1000 / 30, "legend", 800, 480, main);
+    var dataList;
+    var stageLayer;
+    var stageIndex = 0;
+    var MOVE_STEP = 8;
+    var MOVE_STEP_SLOW = 8;
+    var MOVE_STEP_FAST = 12;
+    var g = 3;
+    var stopFlag;
+    var gameBody;
+    var runMap;
+    var runCharacter;
+    var npcLayer;
+    var itemLayer;
+    var MySoundPlayer;
+    var starCtrl;
+    var redom = Math.random();
+
+    var loadData = [];
+    function main() {
+        //预读取音频
+        if (LSound.webAudioEnabled || LGlobal.os == OS_PC) {
+            //浏览器支持WebAudio，或者环境为PC，则预先读取所有音频
+            loadData.push({ name: "sound_fly", path: "sound/fly.mp3" });
+            loadData.push({ name: "sound_gameover", path: "sound/gameover.mp3" });
+            loadData.push({ name: "sound_get", path: "sound/get.mp3" });
+            loadData.push({ name: "sound_jump", path: "sound/jump.mp3" });
+            loadData.push({ name: "dropIn", path: "sound/s_dropIn.mp3" });
+        }
+        loadingLayer = new LoadingSample4();
+        addChild(loadingLayer);
+        LLoadManage.load(loadData, function (progress) {
+            loadingLayer.setProgress(progress);
+        }, imgLoadComplete);
+    }
+    function imgLoadComplete(result) {
+        window.imglist= dataList = result;
+        removeChild(loadingLayer);
+        loadingLayer = null;
+
+        MySoundPlayer = new SoundPlayer();
+
+        stageLayer = new LSprite();
+        stageLayer.graphics.drawRect(1, "#cccccc", [0, 0, LGlobal.width, LGlobal.height], true, "#cccccc");
+        addChild(stageLayer);
+        stageLayer.addEventListener(LMouseEvent.MOUSE_DOWN, function () {
+            MySoundPlayer.playSound("dropIn");
+        });
+    }
+</script>

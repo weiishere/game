@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta content="width =device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone =no" name="format-detection" />
+    <title>1010</title>
+    <style>
+        body { margin: 0;background:#000}
+    </style>
+</head>
+<body>
+    <div id="canvas">
+        <img src="images/ajax-loader.gif" />
+    </div>
+</body>
+</html>
+
+<script src="lufylegend-1.9.10.min.js"></script>
+<!--<script src="script2.js"></script>-->
+<script>
+    /// <reference path="lufylegend-1.9.10.min.js" />
+    
+    (function (exp) {
+        //return false;
+        exp.onresize = function () { LGlobal.resize(); }
+        LGlobal.destroy = true; //保证游戏中的不用的对象能够顺利被释放
+        //LGlobal.preventDefault = false;
+        LGlobal.stageScale = LStageScaleMode.EXACT_FIT;
+        //全局变量
+        (function () {
+            exp.time = 0;
+            exp.score1;
+            exp.score2;
+            exp.but_voice;
+            exp.but_game;
+            exp.item_x = 10;
+            exp.item_y = 10;
+            exp.gameMainPanel;
+            exp.bgBlocks;
+            exp.BlocksWrap;
+            exp.activeBlock = undefined;
+            exp.score_x = [];//横向清除行
+            exp.score_y = [];//纵向清除列
+            exp.imgData = new Array(
+                { name: "number1_0", path: "img/number1/number1_0.png" },
+                { name: "number1_1", path: "img/number1/number1_1.png" },
+                { name: "number1_2", path: "img/number1/number1_2.png" },
+                { name: "number1_3", path: "img/number1/number1_3.png" },
+                { name: "number1_4", path: "img/number1/number1_4.png" },
+                { name: "number1_5", path: "img/number1/number1_5.png" },
+                { name: "number1_6", path: "img/number1/number1_6.png" },
+                { name: "number1_7", path: "img/number1/number1_7.png" },
+                { name: "number1_8", path: "img/number1/number1_8.png" },
+                { name: "number1_9", path: "img/number1/number1_9.png" },
+                { name: "number2_0", path: "img/number2/number1_0.png" },
+                { name: "number2_1", path: "img/number2/number1_1.png" },
+                { name: "number2_2", path: "img/number2/number1_2.png" },
+                { name: "number2_3", path: "img/number2/number1_3.png" },
+                { name: "number2_4", path: "img/number2/number1_4.png" },
+                { name: "number2_5", path: "img/number2/number1_5.png" },
+                { name: "number2_6", path: "img/number2/number1_6.png" },
+                { name: "number2_7", path: "img/number2/number1_7.png" },
+                { name: "number2_8", path: "img/number2/number1_8.png" },
+                { name: "number2_9", path: "img/number2/number1_9.png" },
+
+                { name: "icon_share", path: "img/icon_share.png" },
+                { name: "over_bg", path: "img/over_bg.png" },
+                { name: "stop", path: "img/stop.png" },
+                { name: "play", path: "img/play.png" },
+                { name: "jiangbei", path: "img/jiangbei.png" },
+                { name: "fk_de_2", path: "img/fk_de_2.png" },
+                { name: "icon_voice", path: "img/icon_voice.png" }
+            );
+        })();
+        //工具及扩展
+        function main() {
+            LSystem.screen(LStage.FULL_SCREEN);
+            backLayer = new LSprite();
+            backLayer.graphics.drawRect(1, "#cccccc", [0, 0, LGlobal.width, LGlobal.height], true, "transparent");
+            //背景显示
+            addChild(backLayer);
+            loadingLayer = new LoadingSample1();
+            backLayer.addChild(loadingLayer);
+
+            LLoadManage.load(imgData, function (progress) {
+                loadingLayer.setProgress(progress);
+            }, gameInit);
+        }
+        function gameInit(result) {
+            exp.imglist = result;
+            backLayer.die();
+            backLayer.removeAllChild();
+            backLayer.graphics.drawRect(0, "#cccccc", [0, 0, LGlobal.width, LGlobal.height], true, "#fcfcfc");
+
+            var backLayer2 = new LSprite();
+            backLayer2.graphics.drawRect(0, "#cccccc", [0, 0, LGlobal.width - 100, LGlobal.height], true, "#fcfcfc");
+            //LMouseEventContainer.set(LMouseEvent.MOUSE_MOVE, true);
+            //LMouseEventContainer.set(LMouseEvent.MOUSE_UP, true);
+            //LMouseEventContainer.set(LMouseEvent.MOUSE_DOWN, true);
+            //LMouseEventContainer.set(LMouseEvent.MOUSE_OUT, true);
+
+            var _sprite = new LSprite();
+            _sprite.graphics.drawRect(0, "#cccccc", [0, 0, 150 ,150], true, "#000000");//.addChild(new LBitmap(new LBitmapData(imglist["_sprite"])));
+            _sprite.x = 200;
+            _sprite.y = 400;
+                //createSprite({ image: "_sprite", x: 200, y: 400 });
+            addChild(_sprite);
+            
+            _sprite.addEventListener(LMouseEvent.MOUSE_DOWN, function (e) {
+                e.clickTarget.startDrag(e.touchPointID);
+                _sprite.x = e.offsetX - _sprite.getWidth() / 2;
+                _sprite.y = e.offsetY - 200;
+            });
+            backLayer.addEventListener(LMouseEvent.MOUSE_MOVE, function (e) {
+                _sprite.x = e.offsetX - _sprite.getWidth() / 2;
+                _sprite.y = e.offsetY - 200;
+            });
+            backLayer.addEventListener(LMouseEvent.MOUSE_OUT, function (e) {
+                console.log("out");
+            });
+            backLayer.addEventListener(LMouseEvent.MOUSE_UP, function (e) {
+                e.clickTarget.stopDrag();
+                console.log("up");
+            });
+        }
+        LInit(15, "canvas", 640, 960, main, LEvent.INIT);
+    })(window);
+</script>
